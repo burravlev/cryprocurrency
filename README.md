@@ -1,5 +1,9 @@
 # Simple blockchain implementation
 
+### Requirements
+- Java version 21
+- Maven installed
+
 ---
 Build from sources
 ```bash
