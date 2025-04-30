@@ -12,6 +12,8 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 
 public class NodeRunner {
+    private NodeRunner() {}
+
     public static void start(String ...args) {
         NodeConfig config = parseConfig(args);
         NodeInstance runner = NodeInstance.run(config);
@@ -32,9 +34,6 @@ public class NodeRunner {
         }
         if (parsed.containsKey(ArgumentParser.Argument.PORT)) {
             config.setPort(Integer.parseInt(parsed.get(ArgumentParser.Argument.PORT).getFirst()));
-        }
-        if (parsed.containsKey(ArgumentParser.Argument.NEW_WALLET)) {
-
         }
         return config;
     }
