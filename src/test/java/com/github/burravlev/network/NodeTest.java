@@ -50,7 +50,7 @@ public class NodeTest {
             isCalled.set(true);
             Assertions.assertEquals(data, JsonSerializer.fromTree(json, TestData.class));
         });
-        Thread.sleep(100);
+        Thread.sleep(2000);
         node3.sendToTopic(topic, data);
         WaitUtil.waitUntil(isCalled::get, 5);
         Assertions.assertTrue(isCalled.get());

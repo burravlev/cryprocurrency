@@ -18,10 +18,10 @@ class MessageHandler implements BiConsumer<Peer, Message> {
     @Override
     public void accept(Peer peer, Message message) {
         try {
-            EventType type = EventType.byCode(message.getEvent());
+            EventType type = EventType.byCode((int) message.getHeaders().get(Headers.EVENT_TYPE));
             switch (type) {
                 case NEW_PEER -> log.info("new peer: {}", message.getData());
-                case MESSAGE -> handle(message.getTopic(), message.getData());
+                case MESSAGE -> handle((String) message.getHeaders().get(Headers.TOPIC), message.getData());
                 case SUB -> subscribe(peer, message.getData());
                 case UNSUB -> unsubscribe(peer, message.getData());
                 case UNDEF -> log.warn("undefined message: {}", message);

@@ -23,12 +23,12 @@ public class CryptoUtilTest {
     private static String getData() {
         var pair = RsaUtil.generateKeyPair();
         Message event = new Message()
-            .setEvent(EventType.HANDSHAKE.code())
             .setData(JsonSerializer.serializeTree(new PublicIdentity()
                 .setId(RsaUtil.publicToBase64(pair.getPublic()))
                 .setHost("localhost")
                 .setPort(8080)
             ));
+        event.getHeaders().put(Headers.EVENT_TYPE, EventType.HANDSHAKE.code());
         return JsonSerializer.serialize(event);
     }
 }

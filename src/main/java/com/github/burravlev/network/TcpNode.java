@@ -32,9 +32,9 @@ class TcpNode implements Node {
     @Override
     public void sendToTopic(String topic, Object o) {
         var event = new Message()
-            .setEvent(EventType.MESSAGE.code())
-            .setTopic(topic)
             .setData(JsonSerializer.serializeTree(o));
+        event.getHeaders().put(Headers.EVENT_TYPE, EventType.MESSAGE.code());
+        event.getHeaders().put(Headers.TOPIC, topic);
         network.send(event);
     }
 
@@ -45,12 +45,15 @@ class TcpNode implements Node {
 
     @Override
     public void subscribe(String topic, Consumer<JsonNode> callback) {
-        network.send(new Message()
-            .setEvent(EventType.SUB.code())
+        var message = new Message()
             .setData(JsonSerializer.serializeTree(
                     Set.of(topic)
                 )
-            ));
+            );
+        message.getHeaders().put(
+            Headers.EVENT_TYPE, EventType.SUB.code()
+        );
+        network.send(message);
         this.router.subscribe(topic, callback);
     }
 
@@ -110,16 +113,16 @@ class TcpNode implements Node {
     private void sendTopics(PeerConnection connection) {
         var topics = router.routes();
         var pack = new Message()
-            .setData(JsonSerializer.serializeTree(topics))
-            .setEvent(EventType.SUB.code());
+            .setData(JsonSerializer.serializeTree(topics));
+        pack.getHeaders().put(Headers.EVENT_TYPE, EventType.SUB.code());
         connection.send(pack);
     }
 
     private void sendPeers(PeerConnection connection) {
         var nodes = network.getAddresses();
         var pack = new Message()
-            .setData(JsonSerializer.serializeTree(nodes))
-            .setEvent(EventType.NEW_PEER.code());
+            .setData(JsonSerializer.serializeTree(nodes));
+        pack.getHeaders().put(Headers.EVENT_TYPE, EventType.NEW_PEER.code());
         connection.send(pack);
     }
 

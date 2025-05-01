@@ -47,7 +47,8 @@ class Peer implements AutoCloseable {
     }
 
     void send(Message event) {
-        if (event.getTopic() == null || subscriptions.contains(event.getTopic())) {
+        String topic = (String) event.getHeaders().get(Headers.TOPIC);
+        if (topic == null || subscriptions.contains(topic)) {
             connection.send(event);
         }
     }

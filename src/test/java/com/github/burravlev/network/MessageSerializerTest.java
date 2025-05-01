@@ -10,13 +10,13 @@ public class MessageSerializerTest {
     @Test
     public void shouldSerializeAndDeserialize() {
         Message event = new Message()
-            .setEvent(EventType.HANDSHAKE.code())
             .setData(JsonSerializer.serializeTree(
                 new PublicIdentity()
                     .setHost("localhost")
                     .setId("id")
                     .setPort(9090)
             ));
+        event.getHeaders().put(Headers.EVENT_TYPE, EventType.HANDSHAKE.code());
         String json = JsonSerializer.serialize(event);
         log.info(json);
         Message received = JsonSerializer.deserialize(json, Message.class);

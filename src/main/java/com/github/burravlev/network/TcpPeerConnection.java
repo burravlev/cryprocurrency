@@ -54,12 +54,12 @@ class TcpPeerConnection implements PeerConnection {
 
     private void sendHandshake() {
         var event = new Message()
-            .setEvent(EventType.HANDSHAKE.code())
             .setData(JsonSerializer.serializeTree(new PublicIdentity()
                 .setHost(innerIdentity.getHost())
                 .setPort(innerIdentity.getPort())
                 .setId(innerIdentity.getId())
             ));
+        event.getHeaders().put(Headers.EVENT_TYPE, EventType.HANDSHAKE.code());
         send(event);
     }
 

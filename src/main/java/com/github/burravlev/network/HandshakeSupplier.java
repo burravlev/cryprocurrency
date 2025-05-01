@@ -18,7 +18,7 @@ public class HandshakeSupplier implements Supplier<PublicIdentity> {
         String encrypted = reader.readLine();
         String decrypted = CryptoUtil.decrypt(encrypted, identity.getPrivateKey());
         Message message = JsonSerializer.deserialize(decrypted, Message.class);
-        if (message.getEvent() != EventType.HANDSHAKE.code()) {
+        if ((int) message.getHeaders().get(Headers.EVENT_TYPE) != EventType.HANDSHAKE.code()) {
             throw new IllegalStateException("cannot handshake, invalid message: " +  decrypted);
         }
         return JsonSerializer.fromTree(message.getData(), PublicIdentity.class);
