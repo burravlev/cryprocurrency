@@ -17,4 +17,6 @@ public interface Blockchain {
     List<Block> getBlocks();
 
     int size();
+
+    void addBlock(Block block);
 }

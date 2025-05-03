@@ -28,8 +28,12 @@ class DefaultMiner implements Miner {
                         .collect(Collectors.toList()),
                     block.getHash()
                 );
-                chainStorage.save(block);
-                publisher.newBlock(block);
+                lastHash = chainStorage.getLastHash();
+                System.out.println(lastHash);
+                if (lastHash.equals(block.getPrevHash())) {
+                    chainStorage.save(block);
+                    publisher.newBlock(block);
+                }
             } catch (Exception e) {
                 log.error("", e);
             }

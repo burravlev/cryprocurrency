@@ -37,10 +37,10 @@ public class NodeInstance {
         node.start();
         Storage storage = StorageFactory.byFile(config.getStoragePath());
         Blockchain blockchain = new DefaultBlockchain(
-            wallet, storage, event -> {
-        }
+            wallet, storage, new NewBlockPublisher(node)
         );
         new BlockUploader(node, blockchain);
+        new NewBlockListener(blockchain, node);
         ChainRestorer restorer = new ChainRestorer(node, blockchain.restorer());
         restorer.restore();
         if (blockchain.size() == 0) {

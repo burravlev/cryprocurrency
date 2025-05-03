@@ -8,7 +8,6 @@ import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
@@ -27,7 +26,7 @@ public class Block {
     private String prevHash;
     private String miner;
     private String hash;
-    private long timestamp = ZonedDateTime.now().toEpochSecond();
+    private long timestamp = System.currentTimeMillis();
     private Collection<Transaction> transactions = Collections.emptyList();
     private String signature;
 
@@ -46,6 +45,7 @@ public class Block {
     private void mine() {
         this.hash = hash();
         while (!isHashValid()) {
+            timestamp = System.currentTimeMillis();
             nonce++;
             this.hash = hash();
         }

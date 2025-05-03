@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 public class DefaultBlockchain implements Blockchain {
     private static final String REWARD = "19000000";
-    private static final int TX_THRESHOLD = 10;
+    private static final int TX_THRESHOLD = 2;
 
     private final AtomicInteger pendingTxCount = new AtomicInteger();
 
@@ -117,6 +117,22 @@ public class DefaultBlockchain implements Blockchain {
             block.setTransactions(txStorage.getByHash(block.getHash()));
         }
         return blocks;
+    }
+
+    @Override
+    public void addBlock(Block block) {
+        String lastHash = chainStorage.getLastHash();
+        if (!block.getPrevHash().equals(lastHash) || !block.isValid()) {
+            return;
+        }
+        txStorage.markAccepted(
+            block.getTransactions()
+                .stream()
+                .map(Transaction::getId)
+                .collect(Collectors.toSet()),
+            block.getHash()
+        );
+        chainStorage.save(block);
     }
 
     @Override
