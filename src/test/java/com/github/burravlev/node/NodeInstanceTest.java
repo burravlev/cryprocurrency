@@ -13,10 +13,10 @@ import java.security.KeyPair;
 import java.util.List;
 import java.util.UUID;
 
-public class NodeInstanceTest {
+class NodeInstanceTest {
     @Test
     @SneakyThrows
-    public void shouldRunNodes() {
+    void shouldRunNodes() {
         String db1 = ResourceUtil.getAbsolutePathAsString(UUID.randomUUID() + ".db");
         String db2 = ResourceUtil.getAbsolutePathAsString(UUID.randomUUID() + ".db");
         ResourceUtil.deleteOnExit(db1);

@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test;
 import java.net.ServerSocket;
 
 @Slf4j
-public class TcpPeerConnectionTest {
+class TcpPeerConnectionTest {
 
     @Test
-    public void testClientConnection() throws Exception {
+    void testClientConnection() throws Exception {
         int port = 8080;
         Message message = new Message()
             .setData(JsonSerializer.serializeTree("Hello world!"));

@@ -15,8 +15,6 @@ enum EventType {
     HANDSHAKE(1),
     NEW_PEER(2),
     MESSAGE(3),
-    SUB(4),
-    UNSUB(5),
     OK(6);
 
     private static final Map<Integer, EventType> EVENTS = new HashMap<>();

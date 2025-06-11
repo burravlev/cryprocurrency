@@ -9,11 +9,11 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class NodeTest {
+class NodeTest {
 
     @Test
     @SneakyThrows
-    public void testTwoPeersNet() {
+    void testTwoPeersNet() {
         Node node1 = new NodeBuilder()
             .build();
         node1.start();
@@ -31,7 +31,7 @@ public class NodeTest {
 
     @Test
     @SneakyThrows
-    public void testNodeStart() {
+    void testNodeStart() {
         Node node1 = new NodeBuilder().build();
         node1.start();
         Node node2 = new NodeBuilder()
@@ -50,7 +50,6 @@ public class NodeTest {
             isCalled.set(true);
             Assertions.assertEquals(data, JsonSerializer.fromTree(json, TestData.class));
         });
-        Thread.sleep(2000);
         node3.sendToTopic(topic, data);
         WaitUtil.waitUntil(isCalled::get, 5);
         Assertions.assertTrue(isCalled.get());
@@ -64,7 +63,7 @@ public class NodeTest {
 
     @Test
     @SneakyThrows
-    public void testSubscriptions() {
+    void testSubscriptions() {
         Node node1 = new NodeBuilder().build();
         node1.start();
         Node node2 = new NodeBuilder()
@@ -72,7 +71,8 @@ public class NodeTest {
             .build();
         node2.start();
 
-        node1.subscribe("topic", json -> {});
+        node1.subscribe("topic", json -> {
+        });
 
         node1.close();
         node2.close();

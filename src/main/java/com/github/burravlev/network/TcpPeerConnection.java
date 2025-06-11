@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 class TcpPeerConnection implements PeerConnection {
@@ -21,6 +22,7 @@ class TcpPeerConnection implements PeerConnection {
     private final PublicIdentity peerIdentity;
     private final PrintWriter writer;
     private final BufferedReader reader;
+    private final AtomicBoolean running = new AtomicBoolean(true);
 
     @SneakyThrows
     TcpPeerConnection(Socket client, NodeIdentity identity) {
@@ -94,6 +96,7 @@ class TcpPeerConnection implements PeerConnection {
 
     @Override
     public void close() throws Exception {
+        running.set(false);
         writer.close();
         reader.close();
         socket.close();

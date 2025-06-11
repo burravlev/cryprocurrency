@@ -9,7 +9,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
@@ -33,8 +32,8 @@ class TcpNode implements Node {
     public void sendToTopic(String topic, Object o) {
         var event = new Message()
             .setData(JsonSerializer.serializeTree(o));
-        event.getHeaders().put(Headers.EVENT_TYPE, EventType.MESSAGE.code());
-        event.getHeaders().put(Headers.TOPIC, topic);
+        event.addHeader(Headers.EVENT_TYPE, EventType.MESSAGE.code());
+        event.addHeader(Headers.TOPIC, topic);
         network.send(event);
     }
 
@@ -45,15 +44,6 @@ class TcpNode implements Node {
 
     @Override
     public void subscribe(String topic, Consumer<JsonNode> callback) {
-        var message = new Message()
-            .setData(JsonSerializer.serializeTree(
-                    Set.of(topic)
-                )
-            );
-        message.getHeaders().put(
-            Headers.EVENT_TYPE, EventType.SUB.code()
-        );
-        network.send(message);
         this.router.subscribe(topic, callback);
     }
 
@@ -99,7 +89,6 @@ class TcpNode implements Node {
                     Socket socket = server.accept();
                     var connection = new TcpPeerConnection(socket, identity);
                     sendPeers(connection);
-                    sendTopics(connection);
                     network.add(connection);
                 } catch (SocketException e) {
                     return;
@@ -108,14 +97,6 @@ class TcpNode implements Node {
                 }
             }
         });
-    }
-
-    private void sendTopics(PeerConnection connection) {
-        var topics = router.routes();
-        var pack = new Message()
-            .setData(JsonSerializer.serializeTree(topics));
-        pack.getHeaders().put(Headers.EVENT_TYPE, EventType.SUB.code());
-        connection.send(pack);
     }
 
     private void sendPeers(PeerConnection connection) {
@@ -135,6 +116,9 @@ class TcpNode implements Node {
         for (String address : addresses) {
             var connection = new TcpPeerConnection(address, identity);
             var pack = connection.read(10);
+            if (pack == null) {
+                continue;
+            }
             var nodes = JsonSerializer.fromTree(pack.getData(), String[].class);
             for (String node : nodes) {
                 network.add(new TcpPeerConnection(node, identity));
@@ -144,8 +128,7 @@ class TcpNode implements Node {
     }
 
     private void logNodeCreation() {
-        log.info("created node [host: {}, port {}, id: {}]",
-            getHost(), getPort(), getId());
+        log.info("created node [host: {}, port {}, id: {}]", getHost(), getPort(), getId());
     }
 
     @Override

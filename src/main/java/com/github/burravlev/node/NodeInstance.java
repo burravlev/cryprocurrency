@@ -41,6 +41,7 @@ public class NodeInstance {
         );
         new BlockUploader(node, blockchain);
         new NewBlockListener(blockchain, node);
+        new GetBalanceListener(node, blockchain);
         ChainRestorer restorer = new ChainRestorer(node, blockchain.restorer());
         restorer.restore();
         if (blockchain.size() == 0) {

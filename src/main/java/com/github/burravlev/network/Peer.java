@@ -4,8 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -15,16 +13,6 @@ class Peer implements AutoCloseable {
     private final PeerConnection connection;
     private final BiConsumer<Peer, Message> onMessage;
     private final Consumer<Peer> onDestroy;
-    private final Set<String> subscriptions = new HashSet<>();
-
-    void subscribe(String topic) {
-        log.info("subscribe node {}: {}", connection.getAddress(), topic);
-        subscriptions.add(topic);
-    }
-
-    void unsubscribe(String topic) {
-        subscriptions.remove(topic);
-    }
 
     @SneakyThrows
     void start() {
@@ -36,10 +24,9 @@ class Peer implements AutoCloseable {
         while (true) {
             try {
                 Message message = connection.read();
-                if (message == null) {
-                    continue;
+                if (message != null) {
+                    onMessage.accept(this, message);
                 }
-                onMessage.accept(this, message);
             } catch (Exception e) {
                 log.error("Cannot process incoming message!");
             }
@@ -47,10 +34,7 @@ class Peer implements AutoCloseable {
     }
 
     void send(Message event) {
-        String topic = (String) event.getHeaders().get(Headers.TOPIC);
-        if (topic == null || subscriptions.contains(topic)) {
-            connection.send(event);
-        }
+        connection.send(event);
     }
 
     String getAddress() {
